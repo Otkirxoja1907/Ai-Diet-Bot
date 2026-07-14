@@ -1,0 +1,89 @@
+/* ==========================================================================
+   AI DIET — DESIGN TOKENS
+   Palette: warm paper + deep moss green + saffron accent + clay for alerts.
+   Display type: Fraunces (editorial warmth). Body: Inter. Data: IBM Plex Mono.
+   ========================================================================== */
+
+:root {
+  /* ---- surfaces ---- */
+  --color-paper: #ffffff;
+  --color-mist: #f3f5f1;
+  --color-mist-2: #eaede6;
+  --color-line: rgba(20, 35, 28, 0.1);
+  --color-line-soft: rgba(20, 35, 28, 0.06);
+
+  /* ---- ink ---- */
+  --color-ink: #14231c;
+  --color-ink-soft: #4b5a50;
+  --color-ink-faint: #8b968e;
+
+  /* ---- brand ---- */
+  --color-moss: #2f5233;
+  --color-moss-dark: #1f3a24;
+  --color-moss-tint: #e4ede5;
+
+  /* ---- accents ---- */
+  --color-saffron: #e7a93c;
+  --color-saffron-dark: #c98a22;
+  --color-clay: #c1553b;
+  --color-clay-tint: #f7e6e1;
+  --color-sky: #4c7a8a;
+
+  /* ---- macro-ring colors (signature element) ---- */
+  --ring-calories: #2f5233;
+  --ring-protein: #c1553b;
+  --ring-carbs: #e7a93c;
+  --ring-fat: #4c7a8a;
+
+  /* ---- type: --font-display / --font-body / --font-mono are injected
+     by next/font/google on <html> in app/layout.jsx ---- */
+
+  /* ---- radius ---- */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 26px;
+  --radius-pill: 999px;
+
+  /* ---- shadow ---- */
+  --shadow-soft: 0 4px 24px rgba(20, 35, 28, 0.06);
+  --shadow-lift: 0 12px 40px rgba(20, 35, 28, 0.12);
+
+  /* ---- motion ---- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur: 220ms;
+
+  --shell-max: 480px;
+}
+
+[data-theme="dark"] {
+  --color-paper: #10160f;
+  --color-mist: #171f16;
+  --color-mist-2: #1f2a1d;
+  --color-line: rgba(244, 246, 243, 0.1);
+  --color-line-soft: rgba(244, 246, 243, 0.06);
+
+  --color-ink: #f4f6f3;
+  --color-ink-soft: #b8c2ba;
+  --color-ink-faint: #77837a;
+
+  --color-moss: #6ea373;
+  --color-moss-dark: #4d7a52;
+  --color-moss-tint: #1c2c1e;
+
+  --color-saffron: #f0bc5e;
+  --color-saffron-dark: #e7a93c;
+  --color-clay: #e3846c;
+  --color-clay-tint: #2b1b17;
+  --color-sky: #7fb0c1;
+
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lift: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

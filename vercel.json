@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/**/*.js",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "app/**/*.jsx",
+      "use": "@vercel/next"
+    }
+  ],
+  "functions": {
+    "app/api/webhook/route.js": {
+      "maxDuration": 30
+    }
+  }
+}

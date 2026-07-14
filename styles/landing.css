@@ -1,0 +1,91 @@
+.landing__hero {
+  padding: 24px 20px 12px;
+  text-align: left;
+}
+
+.landing__headline {
+  font-size: 40px;
+  line-height: 1.08;
+  margin: 14px 0 12px;
+  max-width: 11ch;
+}
+
+.landing__body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+  max-width: 40ch;
+}
+
+.landing__ring {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 28px 0 22px;
+}
+
+.landing__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+
+.landing__legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.landing__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.landing__features {
+  margin-top: 40px;
+  padding: 24px 20px 32px;
+  background: var(--color-mist);
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feature-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  color: var(--color-moss);
+}
+
+.feature-row h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 3px;
+}
+
+.feature-row p {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+.landing__footer {
+  padding: 20px;
+  text-align: center;
+}

@@ -1,0 +1,117 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+img { max-width: 100%; display: block; }
+button { font-family: inherit; }
+a { color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+p { margin: 0; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
+
+.numeral {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- app shell: mobile-first, centered column on wide viewports ---- */
+.app-shell {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--color-paper);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell.with-nav {
+  padding-bottom: 84px;
+}
+
+.screen {
+  flex: 1;
+  padding: 20px 20px 8px;
+  animation: rise var(--dur) var(--ease);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), opacity var(--dur) var(--ease);
+  font-family: var(--font-body);
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--color-moss);
+  color: #fdfdfb;
+}
+.btn-primary:hover { background: var(--color-moss-dark); }
+
+.btn-accent {
+  background: var(--color-saffron);
+  color: var(--color-moss-dark);
+}
+.btn-accent:hover { background: var(--color-saffron-dark); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+}
+
+.card {
+  background: var(--color-mist);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-line-soft);
+}
+
+.hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 0;
+}
