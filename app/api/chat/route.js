@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   const { message, language } = await request.json();
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!message) {
     return NextResponse.json({ error: "Message content is required" }, { status: 400 });
@@ -19,28 +19,27 @@ export async function POST(request) {
       `Do not answer generic non-health questions. ` +
       `User query: ${message}`;
 
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: message },
-        ],
-        temperature: 0.7,
-        max_tokens: 1024,
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1024,
+        }
       }),
     });
 
     const data = await res.json();
-    const answer = data.choices?.[0]?.message?.content || "Kechirasiz, javob olishda xatolik yuz berdi.";
+    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "Kechirasiz, javob olishda xatolik yuz berdi.";
     return NextResponse.json({ response: answer });
   } catch (error) {
-    console.error("Groq API call failed:", error.message);
+    console.error("Gemini API call failed:", error.message);
     return NextResponse.json({ error: "AI server response failed" }, { status: 500 });
   }
 }

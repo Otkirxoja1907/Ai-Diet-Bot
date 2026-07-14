@@ -32,8 +32,8 @@ export default function FoodScannerModal({ onClose, onAdd }) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "scan failed");
         setResult(data);
-      } catch {
-        setError(true);
+      } catch (err) {
+        setError(err.message || "Xatolik yuz berdi");
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ export default function FoodScannerModal({ onClose, onAdd }) {
           </div>
         )}
 
-        {error && <p className="scan-error">—</p>}
+        {error && <p className="scan-error" style={{ color: "#ff4d4f", textAlign: "center", marginTop: 10 }}>{error}</p>}
 
         {result && (
           <div className="scan-result">
