@@ -31,11 +31,16 @@ export default function Chat() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg.text, language: lang }),
+        signal: AbortSignal.timeout(60000),
       });
       const data = await res.json();
-      setMessages((m) => [...m, { role: "ai", text: data.response || "—" }]);
+      if (data.error) {
+        setMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
+      } else {
+        setMessages((m) => [...m, { role: "ai", text: data.response || "—" }]);
+      }
     } catch {
-      setMessages((m) => [...m, { role: "ai", text: "—" }]);
+      setMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
     } finally {
       setSending(false);
     }

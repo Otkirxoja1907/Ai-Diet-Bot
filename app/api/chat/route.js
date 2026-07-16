@@ -36,7 +36,18 @@ export async function POST(request) {
     });
 
     const data = await res.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "Kechirasiz, javob olishda xatolik yuz berdi.";
+
+    if (data.error) {
+      console.error("Gemini API error:", JSON.stringify(data.error));
+      return NextResponse.json({ error: data.error.message || "Gemini xatoligi" });
+    }
+
+    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!answer) {
+      console.error("Gemini empty response:", JSON.stringify(data).substring(0, 300));
+      return NextResponse.json({ error: "AI javob bermadi" });
+    }
+
     return NextResponse.json({ response: answer });
   } catch (error) {
     console.error("Gemini API call failed:", error.message);
