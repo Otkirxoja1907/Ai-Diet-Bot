@@ -6,7 +6,8 @@ import { useApp } from "../context/AppContext";
 
 export default function FoodScannerModal({ onClose, onAdd }) {
   const { t } = useApp();
-  const fileRef = useRef(null);
+  const cameraRef = useRef(null);
+  const galleryRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -33,13 +34,29 @@ export default function FoodScannerModal({ onClose, onAdd }) {
     }
   };
 
-  const handleFile = (e) => {
+  const handleCamera = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => analyzeImage(reader.result);
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const handleGallery = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => analyzeImage(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const reset = () => {
+    setPreview(null);
+    setResult(null);
+    setError(null);
+    setLoading(false);
   };
 
   return (
@@ -52,26 +69,23 @@ export default function FoodScannerModal({ onClose, onAdd }) {
           </button>
         </div>
 
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={handleCamera} />
+        <input ref={galleryRef} type="file" accept="image/*" hidden onChange={handleGallery} />
+
         {!preview && !loading && !error && !result && (
-          <>
-            <div className="scan-choices">
-              <button className="scan-choice" onClick={() => { fileRef.current.setAttribute("capture", "environment"); fileRef.current.click(); }}>
-                <Camera size={24} />
-                <span>{t.takePhoto}</span>
-              </button>
-              <button className="scan-choice" onClick={() => { fileRef.current.removeAttribute("capture"); fileRef.current.click(); }}>
-                <Image size={24} />
-                <span>{t.chooseFromGallery}</span>
-              </button>
-            </div>
-          </>
+          <div className="scan-choices">
+            <button className="scan-choice" onClick={() => cameraRef.current?.click()}>
+              <Camera size={24} />
+              <span>{t.takePhoto}</span>
+            </button>
+            <button className="scan-choice" onClick={() => galleryRef.current?.click()}>
+              <Image size={24} />
+              <span>{t.chooseFromGallery}</span>
+            </button>
+          </div>
         )}
 
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFile} />
-
-        {preview && !loading && !error && !result && (
-          <img src={preview} alt="" className="scan-preview" />
-        )}
+        {preview && <img src={preview} alt="" className="scan-preview" />}
 
         {loading && (
           <div className="scan-loading">
@@ -83,7 +97,7 @@ export default function FoodScannerModal({ onClose, onAdd }) {
         {error && (
           <div className="scan-error-block">
             <p className="scan-error">{error}</p>
-            <button className="btn btn-ghost" style={{ width: "100%", marginTop: 10 }} onClick={() => { setPreview(null); setError(null); setResult(null); }}>
+            <button className="btn btn-ghost" style={{ width: "100%", marginTop: 10 }} onClick={reset}>
               {t.tryAgain}
             </button>
           </div>
@@ -110,7 +124,7 @@ export default function FoodScannerModal({ onClose, onAdd }) {
             <button
               className="btn btn-ghost"
               style={{ width: "100%", marginTop: 8 }}
-              onClick={() => { setPreview(null); setResult(null); setError(null); }}
+              onClick={reset}
             >
               {t.rescan}
             </button>
