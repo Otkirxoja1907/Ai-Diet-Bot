@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useApp } from "../../../context/AppContext";
-import FoodScannerModal from "../../../components/FoodScannerModal";
 
 const SLOTS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function Tracker() {
   const { t, todayMeals, addMeal } = useApp();
-  const [showScanner, setShowScanner] = useState(false);
   const [form, setForm] = useState({ name: "", slot: "breakfast", calories: "", protein: "", carbs: "", fat: "" });
 
   const submit = (e) => {
@@ -26,27 +24,10 @@ export default function Tracker() {
     setForm({ name: "", slot: "breakfast", calories: "", protein: "", carbs: "", fat: "" });
   };
 
-  const handleScanAdd = (result) => {
-    addMeal({
-      name: result.name,
-      slot: t.snack,
-      calories: result.calories,
-      protein: result.protein,
-      carbs: result.carbs,
-      fat: result.fat,
-    });
-    setShowScanner(false);
-  };
-
   return (
     <div className="screen tracker">
       <p className="eyebrow">{t.navTracker}</p>
       <h2 className="tracker__title">{t.addMeal}</h2>
-
-      <button className="scan-cta" onClick={() => setShowScanner(true)}>
-        <Camera size={18} />
-        {t.scanFood}
-      </button>
 
       <form className="meal-form" onSubmit={submit}>
         <input
@@ -88,8 +69,6 @@ export default function Tracker() {
           ))}
         </ul>
       )}
-
-      {showScanner && <FoodScannerModal onClose={() => setShowScanner(false)} onAdd={handleScanAdd} />}
     </div>
   );
 }
