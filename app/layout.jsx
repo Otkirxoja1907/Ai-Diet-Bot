@@ -10,6 +10,8 @@ import "../styles/home.css";
 import "../styles/tracker.css";
 import "../styles/chat.css";
 import "../styles/premium.css";
+import "../styles/report.css";
+import "../styles/menu.css";
 
 const fraunces = Fraunces({
   subsets: ["latin"],

@@ -5,8 +5,8 @@ import { translations } from "../i18n/translations";
 
 const AppContext = createContext(null);
 
-const TIER_LIMITS = { free: 10, mid: 30, ultimed: 60, pro: Infinity };
-const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000 };
+const TIER_LIMITS = { free: 10, mid: 30, ultimed: 60, pro: Infinity, pro_yearly: Infinity };
+const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000, pro_yearly: 250000 };
 
 function readStorage(key, fallback) {
   if (typeof window === "undefined") return fallback;

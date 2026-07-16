@@ -4,8 +4,9 @@ import { createSupabaseAdmin } from "../../../utils/supabase/admin.js";
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEB_APP_URL = process.env.WEBAPP_URL || "https://unhearing-greedless-fretted.ngrok-free.dev";
 
-const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000 };
-const TIER_NAMES = { free: "Bepul", mid: "Mid", ultimed: "Ultimed", pro: "Pro" };
+const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000, pro_yearly: 250000 };
+const TIER_NAMES = { free: "Bepul", mid: "Mid", ultimed: "Ultimed", pro: "Pro", pro_yearly: "Pro (1 yil)" };
+const TIER_DURATION_MONTHS = { free: 0, mid: 1, ultimed: 1, pro: 1, pro_yearly: 12 };
 
 async function tg(method, body) {
   const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
@@ -65,14 +66,18 @@ async function handleMessage(message) {
         });
       }
 
+      const months = TIER_DURATION_MONTHS[tier] || 1;
+      const periodLabel = months === 12 ? "1 yil" : "1 oy";
+      const periodDesc = months === 12 ? "Yillik obuna" : "Oylik obuna";
+
       return tg("sendInvoice", {
         chat_id: chatId,
         title: `AI Diet — ${TIER_NAMES[tier]} tarifi`,
-        description: `Oylik obuna: ${TIER_NAMES[tier]} (${TIER_PRICE[tier].toLocaleString("ru-RU")} UZS/oy)`,
+        description: `${periodDesc}: ${TIER_NAMES[tier]} (${TIER_PRICE[tier].toLocaleString("ru-RU")} UZS/${periodLabel})`,
         payload: `premium_${tier}_${chatId}`,
         provider_token: "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065",
         currency: "UZS",
-        prices: [{ label: `${TIER_NAMES[tier]} — 1 oy`, amount: TIER_PRICE[tier] * 100 }],
+        prices: [{ label: `${TIER_NAMES[tier]} — ${periodLabel}`, amount: TIER_PRICE[tier] * 100 }],
       });
     }
 
@@ -141,7 +146,8 @@ async function handleSuccessfulPayment(message) {
     const db = createSupabaseAdmin();
     const now = new Date();
     const expiry = new Date(now);
-    expiry.setMonth(expiry.getMonth() + 1);
+    const months = TIER_DURATION_MONTHS[tier] || 1;
+    expiry.setMonth(expiry.getMonth() + months);
 
     await updateUser(db, chatId, {
       tier,

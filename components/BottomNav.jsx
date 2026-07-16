@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LineChart, Sparkles, Crown } from "lucide-react";
+import { Home, LineChart, Sparkles, Crown, BarChart3, CalendarDays } from "lucide-react";
 import { useApp } from "../context/AppContext";
 
 export default function BottomNav() {
@@ -13,6 +13,8 @@ export default function BottomNav() {
     { href: "/app", label: t.navHome, icon: Home },
     { href: "/app/tracker", label: t.navTracker, icon: LineChart },
     { href: "/app/chat", label: t.navChat, icon: Sparkles },
+    { href: "/app/report", label: t.navReport, icon: BarChart3 },
+    { href: "/app/menu", label: t.navMenu, icon: CalendarDays },
     { href: "/app/premium", label: t.navPremium, icon: Crown },
   ];
 

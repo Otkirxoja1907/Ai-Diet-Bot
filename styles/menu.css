@@ -1,0 +1,140 @@
+.menu__title {
+  font-size: 22px;
+  margin: 6px 0 4px;
+}
+.menu__desc {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  margin-bottom: 18px;
+}
+
+/* ---- prefs card ---- */
+.menu__prefs {
+  padding: 18px;
+}
+.menu__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  margin-bottom: 8px;
+  display: block;
+}
+.menu__textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* ---- error ---- */
+.menu__error {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--color-clay-tint);
+  color: var(--color-clay);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---- result ---- */
+.menu__result {
+  margin-top: 8px;
+}
+
+/* ---- day card ---- */
+.menu__day {
+  margin-top: 10px;
+  overflow: hidden;
+}
+.menu__day-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.menu__day-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-right: 10px;
+}
+.menu__day-cal {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+}
+
+/* ---- meals inside day ---- */
+.menu__day-meals {
+  padding: 0 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.menu__meal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--color-mist);
+  border-radius: var(--radius-sm);
+}
+.menu__meal-slot {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-moss);
+  font-weight: 600;
+}
+.menu__meal-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.menu__meal-cal {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+.menu__meal-macros {
+  font-size: 11px;
+}
+
+/* ---- shopping list ---- */
+.menu__shopping {
+  margin-top: 14px;
+  padding: 16px;
+}
+.menu__shopping-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.menu__shopping-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.menu__shopping-item {
+  font-size: 12px;
+  padding: 5px 10px;
+  background: var(--color-moss-tint);
+  color: var(--color-moss);
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+}
+
+/* ---- spinner ---- */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}

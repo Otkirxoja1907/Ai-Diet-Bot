@@ -49,8 +49,9 @@ async function addPayment(userId, tier, amount, currency, telegramPaymentId) {
   if (error) console.error('Add payment error:', error.message);
 }
 
-const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000 };
-const TIER_NAMES = { free: 'Bepul', mid: 'Mid', ultimed: 'Ultimed', pro: 'Pro' };
+const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000, pro_yearly: 250000 };
+const TIER_NAMES = { free: 'Bepul', mid: 'Mid', ultimed: 'Ultimed', pro: 'Pro', pro_yearly: 'Pro (1 yil)' };
+const TIER_DURATION_MONTHS = { free: 0, mid: 1, ultimed: 1, pro: 1, pro_yearly: 12 };
 
 const bot = new TelegramBot(token, { polling: true });
 
@@ -83,14 +84,18 @@ bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
 
     const priceKopeks = TIER_PRICE[tier] * 100;
 
+    const months = TIER_DURATION_MONTHS[tier] || 1;
+    const periodLabel = months === 12 ? '1 yil' : '1 oy';
+    const periodDesc = months === 12 ? 'Yillik obuna' : 'Oylik obuna';
+
     await bot.sendInvoice(chatId, {
       title: `AI Diet — ${TIER_NAMES[tier]} tarifi`,
-      description: `Oylik obuna: ${TIER_NAMES[tier]} (${TIER_PRICE[tier].toLocaleString('ru-RU')} UZS/oy)`,
+      description: `${periodDesc}: ${TIER_NAMES[tier]} (${TIER_PRICE[tier].toLocaleString('ru-RU')} UZS/${periodLabel})`,
       payload: `premium_${tier}_${chatId}`,
       provider_token: '398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065',
       currency: 'UZS',
       prices: [
-        { label: `${TIER_NAMES[tier]} — 1 oy`, amount: priceKopeks },
+        { label: `${TIER_NAMES[tier]} — ${periodLabel}`, amount: priceKopeks },
       ],
       need_email: false,
     });
@@ -134,7 +139,8 @@ bot.on('message', async (msg) => {
     const tier = payloadParts[1];
     const now = new Date();
     const expiry = new Date(now);
-    expiry.setMonth(expiry.getMonth() + 1);
+    const months = TIER_DURATION_MONTHS[tier] || 1;
+    expiry.setMonth(expiry.getMonth() + months);
 
     await updateUser(chatId, {
       tier,

@@ -9,6 +9,7 @@ const TIERS = [
   { key: "mid", nameKey: "mid", descKey: "tierMidDesc" },
   { key: "ultimed", nameKey: "ultimed", descKey: "tierUltimedDesc" },
   { key: "pro", nameKey: "pro", descKey: "tierProDesc" },
+  { key: "pro_yearly", nameKey: "proYearly", descKey: "tierProYearlyDesc" },
 ];
 
 const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME || "aidiet_test_uz_bot";
@@ -83,7 +84,7 @@ export default function Premium() {
                 <span className="tier-card__name">{t[tier.nameKey]}</span>
                 <span className="tier-card__price numeral">
                   {price === 0 ? t.free : `${price.toLocaleString("ru-RU")} UZS`}
-                  {price > 0 && <span className="faint">{t.perMonth}</span>}
+                  {price > 0 && <span className="faint">{tier.key === "pro_yearly" ? t.perYear : t.perMonth}</span>}
                 </span>
               </div>
               <p className="tier-card__desc">{t[tier.descKey]}</p>
