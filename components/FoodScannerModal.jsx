@@ -74,6 +74,7 @@ export default function FoodScannerModal({ onClose, onAdd }) {
           <div className="scan-result">
             <p className="scan-result__name">{result.name}</p>
             <p className="scan-result__confidence numeral">{result.confidence}% {t.confidence}</p>
+            {result.portion && <p className="scan-result__portion">{result.portion}</p>}
             <div className="scan-result__macros">
               <span className="numeral">{result.calories} kcal</span>
               <span className="numeral">{result.protein}g {t.protein}</span>
