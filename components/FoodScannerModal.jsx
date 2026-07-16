@@ -6,7 +6,8 @@ import { useApp } from "../context/AppContext";
 
 export default function FoodScannerModal({ onClose, onAdd }) {
   const { t } = useApp();
-  const fileRef = useRef(null);
+  const cameraRef = useRef(null);
+  const galleryRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -42,32 +43,6 @@ export default function FoodScannerModal({ onClose, onAdd }) {
     e.target.value = "";
   };
 
-  const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } },
-      });
-      const video = document.createElement("video");
-      video.srcObject = stream;
-      video.setAttribute("playsinline", "true");
-      await video.play();
-
-      await new Promise((r) => setTimeout(r, 300));
-
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext("2d").drawImage(video, 0, 0);
-
-      stream.getTracks().forEach((t) => t.stop());
-
-      const base64 = canvas.toDataURL("image/jpeg", 0.85);
-      analyzeImage(base64);
-    } catch {
-      fileRef.current?.click();
-    }
-  };
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
@@ -80,18 +55,19 @@ export default function FoodScannerModal({ onClose, onAdd }) {
 
         {!preview && (
           <div className="scan-choices">
-            <button className="scan-choice" onClick={openCamera}>
+            <button className="scan-choice" onClick={() => cameraRef.current?.click()}>
               <Camera size={24} />
               <span>{t.takePhoto}</span>
             </button>
-            <button className="scan-choice" onClick={() => fileRef.current?.click()}>
+            <button className="scan-choice" onClick={() => galleryRef.current?.click()}>
               <Image size={24} />
               <span>{t.chooseFromGallery}</span>
             </button>
           </div>
         )}
 
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFile} />
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={handleFile} />
+        <input ref={galleryRef} type="file" accept="image/*" hidden onChange={handleFile} />
 
         {preview && <img src={preview} alt="" className="scan-preview" />}
 

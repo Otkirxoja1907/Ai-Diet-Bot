@@ -63,6 +63,7 @@ JSON dan tashqari hech narsa yozma.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(30000),
       }
     );
 
@@ -71,6 +72,11 @@ JSON dan tashqari hech narsa yozma.`;
     if (data.error) {
       console.error("Gemini scan error:", JSON.stringify(data.error));
       return NextResponse.json({ error: data.error.message || "AI xatoligi" }, { status: 500 });
+    }
+
+    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+      console.error("Gemini scan empty response:", JSON.stringify(data).substring(0, 500));
+      return NextResponse.json({ error: "AI javob bermadi. Qaytadan urinib ko'ring." }, { status: 500 });
     }
 
     let textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
