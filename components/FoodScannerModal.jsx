@@ -1,43 +1,44 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { X, Camera, Loader2 } from "lucide-react";
+import { X, Camera, Image, Loader2 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 
 export default function FoodScannerModal({ onClose, onAdd }) {
   const { t } = useApp();
-  const fileRef = useRef(null);
+  const cameraRef = useRef(null);
+  const galleryRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const analyzeImage = async (base64) => {
+    setPreview(base64);
+    setLoading(true);
     setError(null);
     setResult(null);
+    try {
+      const res = await fetch("/api/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "scan failed");
+      setResult(data);
+    } catch (err) {
+      setError(err.message || "Xatolik yuz berdi");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleFile = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = reader.result;
-      setPreview(base64);
-      setLoading(true);
-      try {
-        const res = await fetch("/api/scan", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: base64 }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "scan failed");
-        setResult(data);
-      } catch (err) {
-        setError(err.message || "Xatolik yuz berdi");
-      } finally {
-        setLoading(false);
-      }
-    };
+    reader.onload = () => analyzeImage(reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -52,23 +53,38 @@ export default function FoodScannerModal({ onClose, onAdd }) {
         </div>
 
         {!preview && (
-          <button className="scan-dropzone" onClick={() => fileRef.current?.click()}>
-            <Camera size={26} />
-            <span>{t.scanFood}</span>
-          </button>
+          <div className="scan-choices">
+            <button className="scan-choice" onClick={() => cameraRef.current?.click()}>
+              <Camera size={24} />
+              <span>{t.takePhoto}</span>
+            </button>
+            <button className="scan-choice" onClick={() => galleryRef.current?.click()}>
+              <Image size={24} />
+              <span>{t.chooseFromGallery}</span>
+            </button>
+          </div>
         )}
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={handleFile} />
+
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={handleFile} />
+        <input ref={galleryRef} type="file" accept="image/*" hidden onChange={handleFile} />
 
         {preview && <img src={preview} alt="" className="scan-preview" />}
 
         {loading && (
           <div className="scan-loading">
-            <Loader2 size={18} className="spin" />
+            <Loader2 size={20} className="spin" />
             <span>{t.scanning}</span>
           </div>
         )}
 
-        {error && <p className="scan-error" style={{ color: "#ff4d4f", textAlign: "center", marginTop: 10 }}>{error}</p>}
+        {error && (
+          <div className="scan-error-block">
+            <p className="scan-error">{error}</p>
+            <button className="btn btn-ghost" style={{ width: "100%", marginTop: 10 }} onClick={() => { setPreview(null); setError(null); }}>
+              {t.tryAgain}
+            </button>
+          </div>
+        )}
 
         {result && (
           <div className="scan-result">
@@ -87,6 +103,13 @@ export default function FoodScannerModal({ onClose, onAdd }) {
               onClick={() => onAdd(result)}
             >
               {t.save}
+            </button>
+            <button
+              className="btn btn-ghost"
+              style={{ width: "100%", marginTop: 8 }}
+              onClick={() => { setPreview(null); setResult(null); setError(null); }}
+            >
+              {t.rescan}
             </button>
           </div>
         )}
