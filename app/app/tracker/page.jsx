@@ -8,7 +8,7 @@ import FoodScannerModal from "../../../components/FoodScannerModal";
 const SLOTS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function Tracker() {
-  const { t, meals, addMeal } = useApp();
+  const { t, todayMeals, addMeal } = useApp();
   const [showScanner, setShowScanner] = useState(false);
   const [form, setForm] = useState({ name: "", slot: "breakfast", calories: "", protein: "", carbs: "", fat: "" });
 
@@ -73,11 +73,11 @@ export default function Tracker() {
       </form>
 
       <p className="eyebrow" style={{ marginTop: 26 }}>{t.todaysMeals}</p>
-      {meals.length === 0 ? (
+      {todayMeals.length === 0 ? (
         <p className="empty-note">{t.noMeals}</p>
       ) : (
         <ul className="meal-list">
-          {meals.map((m) => (
+          {todayMeals.map((m) => (
             <li key={m.id} className="meal-list__item">
               <div>
                 <p className="meal-list__name">{m.name}</p>

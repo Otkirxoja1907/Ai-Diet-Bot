@@ -5,7 +5,7 @@ import { useApp } from "../../context/AppContext";
 import MacroRing from "../../components/MacroRing";
 
 export default function Home() {
-  const { t, totals, calorieGoal, macroGoals, meals, waterGlasses, setWaterGlasses } = useApp();
+  const { t, totals, calorieGoal, macroGoals, todayMeals, waterGlasses, setWaterGlasses } = useApp();
   const remaining = Math.max(0, calorieGoal - totals.calories);
 
   const ringValues = {
@@ -62,11 +62,11 @@ export default function Home() {
         <p className="eyebrow">{t.todaysMeals}</p>
       </div>
 
-      {meals.length === 0 ? (
+      {todayMeals.length === 0 ? (
         <p className="empty-note">{t.noMeals}</p>
       ) : (
         <ul className="meal-list">
-          {meals.map((m) => (
+          {todayMeals.map((m) => (
             <li key={m.id} className="meal-list__item">
               <div>
                 <p className="meal-list__name">{m.name}</p>

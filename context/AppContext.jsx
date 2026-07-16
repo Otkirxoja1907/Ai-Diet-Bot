@@ -5,7 +5,7 @@ import { translations } from "../i18n/translations";
 
 const AppContext = createContext(null);
 
-const TIER_LIMITS = { free: 10, mid: 30, ultimed: 60, pro: Infinity, pro_yearly: Infinity };
+const TIER_LIMITS = { free: 15, mid: 30, ultimed: 60, pro: Infinity, pro_yearly: Infinity };
 const TIER_PRICE = { free: 0, mid: 25000, ultimed: 50000, pro: 100000, pro_yearly: 250000 };
 
 function readStorage(key, fallback) {
@@ -72,15 +72,29 @@ export function AppProvider({ children }) {
   const chatRemaining = chatLimit === Infinity ? Infinity : Math.max(0, chatLimit - chatUsedToday);
 
   const totals = useMemo(() => {
-    return meals.reduce(
-      (acc, m) => ({
-        calories: acc.calories + m.calories,
-        protein: acc.protein + m.protein,
-        carbs: acc.carbs + m.carbs,
-        fat: acc.fat + m.fat,
-      }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
-    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStart = today.getTime();
+    const todayEnd = todayStart + 86400000;
+    return meals
+      .filter((m) => m.id >= todayStart && m.id < todayEnd)
+      .reduce(
+        (acc, m) => ({
+          calories: acc.calories + m.calories,
+          protein: acc.protein + m.protein,
+          carbs: acc.carbs + m.carbs,
+          fat: acc.fat + m.fat,
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      );
+  }, [meals]);
+
+  const todayMeals = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStart = today.getTime();
+    const todayEnd = todayStart + 86400000;
+    return meals.filter((m) => m.id >= todayStart && m.id < todayEnd);
   }, [meals]);
 
   const addMeal = (meal) => setMeals((prev) => [{ ...meal, id: Date.now() }, ...prev]);
@@ -100,6 +114,7 @@ export function AppProvider({ children }) {
     calorieGoal,
     macroGoals,
     meals,
+    todayMeals,
     addMeal,
     totals,
     waterGlasses,
