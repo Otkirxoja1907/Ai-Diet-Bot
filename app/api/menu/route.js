@@ -52,20 +52,35 @@ Muhim:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.8, maxOutputTokens: 4096 },
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 8192,
+          },
         }),
       }
     );
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json({ error: "AI noto'g'ri formatda javob berdi" }, { status: 500 });
+    if (data.error) {
+      console.error("Gemini API error:", data.error);
+      return NextResponse.json({ error: data.error.message || "Gemini xatoligi" }, { status: 500 });
     }
 
-    const menu = JSON.parse(jsonMatch[0]);
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    let menu;
+    try {
+      menu = JSON.parse(text);
+    } catch {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error("No JSON found in response:", text.substring(0, 200));
+        return NextResponse.json({ error: "AI noto'g'ri formatda javob berdi" }, { status: 500 });
+      }
+      menu = JSON.parse(jsonMatch[0]);
+    }
+
     return NextResponse.json({ menu });
   } catch (error) {
     console.error("AI Menu error:", error.message);
