@@ -42,19 +42,22 @@ export default function Home() {
       </div>
 
       <div className="water-card card">
-        <div className="water-card__label">
-          <Droplet size={16} color="var(--color-sky)" />
-          <span>{t.water}</span>
-        </div>
-        <div className="water-card__glasses">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <button
-              key={i}
-              className={`glass-dot ${i < waterGlasses ? "is-filled" : ""}`}
-              onClick={() => setWaterGlasses(i + 1 === waterGlasses ? i : i + 1)}
-              aria-label={`${t.glass} ${i + 1}`}
-            />
-          ))}
+        <div className="water-card__row">
+          <div className="water-card__label">
+            <Droplet size={16} color="var(--color-sky)" />
+            <span>{t.water}</span>
+            <span className="numeral water-card__count">{waterGlasses}/8</span>
+          </div>
+          <div className="water-card__glasses">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <button
+                key={i}
+                className={`glass-dot ${i < waterGlasses ? "is-filled" : ""}`}
+                onClick={() => setWaterGlasses(i + 1 === waterGlasses ? i : i + 1)}
+                aria-label={`${t.glass} ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

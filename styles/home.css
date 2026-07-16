@@ -42,32 +42,46 @@
 }
 
 .water-card {
-  padding: 16px;
-  margin-bottom: 22px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+
+.water-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .water-card__label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   color: var(--color-ink-soft);
-  margin-bottom: 12px;
+  white-space: nowrap;
+}
+
+.water-card__count {
+  font-size: 12px;
+  color: var(--color-sky);
+  font-weight: 600;
 }
 
 .water-card__glasses {
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
 
 .glass-dot {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   border: 1.5px solid var(--color-sky);
   background: transparent;
   cursor: pointer;
   transition: background var(--dur) var(--ease);
+  padding: 0;
 }
 .glass-dot.is-filled {
   background: var(--color-sky);
