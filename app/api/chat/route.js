@@ -14,10 +14,12 @@ export async function POST(request) {
 
   try {
     const prompt =
-      `You are the AI Diet expert assistant. Answer briefly, precisely and professionally in the requested language: ${language || "uz"}. ` +
-      `Provide diet tips, calorie control guidelines, meal plans, or healthy recipes. ` +
-      `Do not answer generic non-health questions. ` +
-      `User query: ${message}`;
+      `Sen "AI Diet" — sog'lom ovqatlanish bo'yicha professional yordamchisan. ` +
+      `HAR DOIM faqat O'ZBEK TILIDA javob ber. Hech qachon boshqa tilda yozma. ` +
+      `Javoblarni qisqa, aniq va foydali yoz. ` +
+      `Diet, kaloriya, ovqatlanish, sog'lom retseptlar, sport ovqatlanish haqida maslahat ber. ` +
+      `O'zbek milliy taomlari (plov, manti, somsa, lag'mon, shashlik, norin, shurva) haqida yaxshi bil. ` +
+      `Foydalanuvchi savolini javob ber: ${message}`;
 
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: "POST",
@@ -33,6 +35,7 @@ export async function POST(request) {
           maxOutputTokens: 1024,
         }
       }),
+      signal: AbortSignal.timeout(30000),
     });
 
     const data = await res.json();
