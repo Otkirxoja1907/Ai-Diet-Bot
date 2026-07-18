@@ -28,21 +28,40 @@ export default function Tracker() {
   const [scanSlot, setScanSlot] = useState("lunch");
   const [saved, setSaved] = useState(false);
 
-  // Rasm tanlanganda AI ga yuborish
-  const handleImageSelect = (e) => {
+  const compressImage = (file) =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const max = 800;
+          let w = img.width;
+          let h = img.height;
+          if (w > max || h > max) {
+            if (w > h) { h = Math.round((h * max) / w); w = max; }
+            else { w = Math.round((w * max) / h); h = max; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.7));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+  const handleImageSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      setScanImage(dataUrl);
-      setScanResult(null);
-      setScanError(null);
-      setSaved(false);
-      analyzeImage(dataUrl);
-    };
-    reader.readAsDataURL(file);
     e.target.value = "";
+    const dataUrl = await compressImage(file);
+    setScanImage(dataUrl);
+    setScanResult(null);
+    setScanError(null);
+    setSaved(false);
+    analyzeImage(dataUrl);
   };
 
   const analyzeImage = async (dataUrl) => {
