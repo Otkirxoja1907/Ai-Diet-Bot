@@ -25,6 +25,9 @@ async function callGemini(parts) {
 }
 
 async function callGroq(parts) {
+  const hasImage = parts.some((p) => p.inlineData);
+  const model = hasImage ? "qwen/qwen3.6-27b" : "llama-3.3-70b-versatile";
+
   const messages = [{ role: "user", content: [] }];
   for (const part of parts) {
     if (part.text) {
@@ -43,7 +46,7 @@ async function callGroq(parts) {
       Authorization: `Bearer ${GROQ_KEY}`,
     },
     body: JSON.stringify({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model,
       messages,
       temperature: 0.7,
       max_tokens: 1024,
