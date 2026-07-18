@@ -7,7 +7,7 @@ import { useApp } from "../../../context/AppContext";
 const SLOTS = ["breakfast", "lunch", "dinner", "snack"];
 
 export default function Tracker() {
-  const { t, todayMeals, addMeal } = useApp();
+  const { t, lang, todayMeals, addMeal } = useApp();
 
   // Manual form
   const [form, setForm] = useState({
@@ -72,7 +72,7 @@ export default function Tracker() {
       const res = await fetch("/api/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: dataUrl }),
+        body: JSON.stringify({ image: dataUrl, language: lang }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Tahlil xatoligi");
