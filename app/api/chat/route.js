@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
-const GROQ_KEY = process.env.GROQ_API_KEY;
 
 async function callGemini(parts) {
   const res = await fetch(
@@ -24,70 +23,6 @@ async function callGemini(parts) {
   return text;
 }
 
-async function callGroq(parts) {
-  const hasImage = parts.some((p) => p.inlineData);
-  const model = hasImage ? "qwen/qwen3.6-27b" : "llama-3.3-70b-versatile";
-
-  const messages = [{ role: "user", content: [] }];
-  for (const part of parts) {
-    if (part.text) {
-      messages[0].content.push({ type: "text", text: part.text });
-    } else if (part.inlineData) {
-      messages[0].content.push({
-        type: "image_url",
-        image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` },
-      });
-    }
-  }
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${GROQ_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.7,
-      max_tokens: 1024,
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`Groq ${res.status}: ${txt.substring(0, 200)}`);
-  }
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content;
-  if (!text) throw new Error("Groq bo'sh javob");
-  return text;
-}
-
-function cleanResponse(text) {
-  return text.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
-}
-
-async function callAI(parts) {
-  if (GROQ_KEY) {
-    try {
-      const raw = await callGroq(parts);
-      return cleanResponse(raw);
-    } catch (e) {
-      console.error("Groq failed:", e.message);
-      throw new Error("AI hozir band. Biroz kutib qaytadan urinib ko'ring.");
-    }
-  }
-  if (GEMINI_KEY) {
-    try {
-      return await callGemini(parts);
-    } catch (e) {
-      console.error("Gemini also failed:", e.message);
-      throw new Error("AI hozir band. Biroz kutib qaytadan urinib ko'ring.");
-    }
-  }
-  throw new Error("AI sozlanmagan");
-}
-
 export async function POST(request) {
   let body;
   try {
@@ -99,6 +34,10 @@ export async function POST(request) {
   const { message, image } = body;
   if (!message && !image) {
     return NextResponse.json({ error: "Xabar yoki rasm kerak" }, { status: 400 });
+  }
+
+  if (!GEMINI_KEY) {
+    return NextResponse.json({ error: "AI sozlanmagan" }, { status: 500 });
   }
 
   const systemPrompt =
@@ -125,10 +64,10 @@ export async function POST(request) {
   }
 
   try {
-    const answer = await callAI(parts);
+    const answer = await callGemini(parts);
     return NextResponse.json({ response: answer });
   } catch (err) {
-    console.error("Chat AI error:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Chat Gemini error:", err.message);
+    return NextResponse.json({ error: "AI hozir band. Biroz kutib qaytadan urinib ko'ring." }, { status: 500 });
   }
 }

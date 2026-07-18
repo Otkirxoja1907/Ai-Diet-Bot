@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
-const GROQ_KEY = process.env.GROQ_API_KEY;
 
 const SCAN_PROMPT = `You are a professional food analyzer. Look at the image and identify all food items, calculate full nutritional info.
 
@@ -44,45 +43,8 @@ async function callGemini(base64Data, mimeType) {
   return text;
 }
 
-async function callGroq(base64Data, mimeType) {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${GROQ_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "qwen/qwen3.6-27b",
-      messages: [{
-        role: "user",
-        content: [
-          { type: "text", text: SCAN_PROMPT },
-          { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Data}` } },
-        ],
-      }],
-      temperature: 0.3,
-      max_tokens: 512,
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`Groq ${res.status}: ${txt.substring(0, 200)}`);
-  }
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content;
-  if (!text) throw new Error("Groq bo'sh javob");
-  return text;
-}
-
 function parseScanResponse(raw) {
-  let cleaned = raw
-    .replace(/<think>[\s\S]*?<\/think>/g, "")
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .replace(/^[\s\S]*?(?=\{)/, "")
-    .replace(/\}[\s\S]*$/, "}")
-    .trim();
+  let cleaned = raw.replace(/```json/g, "").replace(/```/g, "").trim();
 
   let parsed;
   try {
@@ -90,19 +52,13 @@ function parseScanResponse(raw) {
   } catch {
     const match = raw.match(/\{[^{}]*"name"[^{}]*"calories"[^{}]*\}/);
     if (match) {
-      try {
-        parsed = JSON.parse(match[0]);
-      } catch {
-        throw new Error("JSON topilmadi");
-      }
+      try { parsed = JSON.parse(match[0]); }
+      catch { throw new Error("JSON topilmadi"); }
     } else {
       const fallback = raw.match(/\{[\s\S]*\}/);
       if (!fallback) throw new Error("JSON topilmadi");
-      try {
-        parsed = JSON.parse(fallback[0]);
-      } catch {
-        throw new Error("JSON topilmadi");
-      }
+      try { parsed = JSON.parse(fallback[0]); }
+      catch { throw new Error("JSON topilmadi"); }
     }
   }
 
@@ -126,21 +82,20 @@ export async function POST(request) {
   const { image } = body;
   if (!image) return NextResponse.json({ error: "Rasm kerak" }, { status: 400 });
 
+  if (!GEMINI_KEY) {
+    return NextResponse.json({ error: "Gemini API kalit topilmadi" }, { status: 500 });
+  }
+
   const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
   const mimeMatch = image.match(/^data:(image\/\w+);base64,/);
   const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
 
   let rawText;
-
-  if (GEMINI_KEY) {
-    try {
-      rawText = await callGemini(base64Data, mimeType);
-    } catch (e) {
-      console.error("Gemini scan failed:", e.message);
-      return NextResponse.json({ error: "AI tahlil qilishda xatolik. Gemini API kalitini tekshiring." }, { status: 500 });
-    }
-  } else {
-    return NextResponse.json({ error: "Gemini API kalit topilmadi" }, { status: 500 });
+  try {
+    rawText = await callGemini(base64Data, mimeType);
+  } catch (e) {
+    console.error("Gemini scan failed:", e.message);
+    return NextResponse.json({ error: "AI tahlil qilishda xatolik. Qaytadan urinib ko'ring." }, { status: 500 });
   }
 
   try {
