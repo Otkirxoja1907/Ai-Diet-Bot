@@ -148,7 +148,7 @@ export default function Tracker() {
           onClick={() => galleryRef.current?.click()}
         >
           <ImagePlus size={18} />
-          <span>📷 Rasm orqali tahlil qil</span>
+          <span>{t.scanFood}</span>
         </button>
       )}
 
