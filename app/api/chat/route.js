@@ -63,6 +63,12 @@ async function callGroq(parts) {
   return text;
 }
 
+function cleanResponse(text) {
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/g, "")
+    .trim();
+}
+
 async function callAI(parts) {
   if (GEMINI_KEY) {
     try {
@@ -73,7 +79,8 @@ async function callAI(parts) {
   }
   if (GROQ_KEY) {
     try {
-      return await callGroq(parts);
+      const raw = await callGroq(parts);
+      return cleanResponse(raw);
     } catch (e) {
       console.error("Groq also failed:", e.message);
       throw new Error("AI hozir band. Biroz kutib qaytadan urinib ko'ring.");
