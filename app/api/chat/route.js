@@ -64,25 +64,24 @@ async function callGroq(parts) {
 }
 
 function cleanResponse(text) {
-  return text
-    .replace(/<think>[\s\S]*?<\/think>/g, "")
-    .trim();
+  return text.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
 }
 
 async function callAI(parts) {
-  if (GEMINI_KEY) {
-    try {
-      return await callGemini(parts);
-    } catch (e) {
-      console.warn("Gemini failed, trying Groq:", e.message);
-    }
-  }
   if (GROQ_KEY) {
     try {
       const raw = await callGroq(parts);
       return cleanResponse(raw);
     } catch (e) {
-      console.error("Groq also failed:", e.message);
+      console.error("Groq failed:", e.message);
+      throw new Error("AI hozir band. Biroz kutib qaytadan urinib ko'ring.");
+    }
+  }
+  if (GEMINI_KEY) {
+    try {
+      return await callGemini(parts);
+    } catch (e) {
+      console.error("Gemini also failed:", e.message);
       throw new Error("AI hozir band. Biroz kutib qaytadan urinib ko'ring.");
     }
   }

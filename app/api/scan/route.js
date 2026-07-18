@@ -136,21 +136,11 @@ export async function POST(request) {
     try {
       rawText = await callGemini(base64Data, mimeType);
     } catch (e) {
-      console.warn("Gemini scan failed, trying Groq:", e.message);
+      console.error("Gemini scan failed:", e.message);
+      return NextResponse.json({ error: "AI tahlil qilishda xatolik. Gemini API kalitini tekshiring." }, { status: 500 });
     }
-  }
-
-  if (!rawText && GROQ_KEY) {
-    try {
-      rawText = await callGroq(base64Data, mimeType);
-    } catch (e) {
-      console.error("Groq scan also failed:", e.message);
-      return NextResponse.json({ error: "AI hozir band. Biroz kutib qaytadan urinib ko'ring." }, { status: 500 });
-    }
-  }
-
-  if (!rawText) {
-    return NextResponse.json({ error: "AI sozlanmagan" }, { status: 500 });
+  } else {
+    return NextResponse.json({ error: "Gemini API kalit topilmadi" }, { status: 500 });
   }
 
   try {
