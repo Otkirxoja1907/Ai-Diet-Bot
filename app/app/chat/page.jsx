@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, ImagePlus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useApp } from "../../../context/AppContext";
 
@@ -11,18 +11,50 @@ export default function Chat() {
   const [messages, setMessages] = useState([{ role: "ai", text: t.chatWelcome }]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null); // base64
+  const [imagePreview, setImagePreview] = useState(null);   // data URL
   const endRef = useRef(null);
+  const galleryRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result);
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+  };
+
   const send = async (e) => {
     e.preventDefault();
-    if (!input.trim() || sending || chatRemaining <= 0) return;
-    const userMsg = { role: "user", text: input.trim() };
+    if ((!input.trim() && !selectedImage) || sending || chatRemaining <= 0) return;
+
+    // Foydalanuvchi xabarini qo'shish
+    const userMsg = {
+      role: "user",
+      text: input.trim() || "📷 Rasm yuborildi",
+      image: imagePreview || null,
+    };
     setMessages((m) => [...m, userMsg]);
+
+    const msgText = input.trim();
+    const msgImage = selectedImage;
+
     setInput("");
+    setSelectedImage(null);
+    setImagePreview(null);
     setSending(true);
     useChatMessage();
 
@@ -30,7 +62,11 @@ export default function Chat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg.text, language: lang }),
+        body: JSON.stringify({
+          message: msgText || undefined,
+          image: msgImage || undefined,
+          language: lang,
+        }),
         signal: AbortSignal.timeout(60000),
       });
       const data = await res.json();
@@ -61,12 +97,33 @@ export default function Chat() {
       <div className="chat__thread">
         {messages.map((m, i) => (
           <div key={i} className={`bubble bubble--${m.role}`}>
-            {m.text}
+            {m.image && (
+              <img
+                src={m.image}
+                alt="yuborilgan rasm"
+                className="chat-bubble-image"
+              />
+            )}
+            {m.text && <span>{m.text}</span>}
           </div>
         ))}
         {sending && <div className="bubble bubble--ai bubble--typing">···</div>}
         <div ref={endRef} />
       </div>
+
+      {/* Rasm preview */}
+      {imagePreview && (
+        <div className="chat__image-preview">
+          <img src={imagePreview} alt="tanlangan rasm" />
+          <button
+            className="chat__image-remove"
+            onClick={removeImage}
+            aria-label="Rasmni olib tashlash"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {limitReached ? (
         <div className="chat__limit">
@@ -76,18 +133,42 @@ export default function Chat() {
           </button>
         </div>
       ) : (
-        <form className="chat__composer" onSubmit={send}>
+        <>
           <input
-            className="field"
-            placeholder={t.chatPlaceholder}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            ref={galleryRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageSelect}
           />
-          <button className="chat__send" type="submit" aria-label="Send">
-            <Send size={16} />
-          </button>
-        </form>
+          <form className="chat__composer" onSubmit={send}>
+            <button
+              type="button"
+              className="chat__gallery-btn"
+              onClick={() => galleryRef.current?.click()}
+              aria-label="Galereya"
+              title="Galereya"
+            >
+              <ImagePlus size={18} />
+            </button>
+            <input
+              className="field"
+              placeholder={t.chatPlaceholder}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button
+              className="chat__send"
+              type="submit"
+              aria-label="Send"
+              disabled={!input.trim() && !selectedImage}
+            >
+              <Send size={16} />
+            </button>
+          </form>
+        </>
       )}
     </div>
   );
 }
+

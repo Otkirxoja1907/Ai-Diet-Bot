@@ -217,3 +217,207 @@ input.field[type=number] {
   padding: 6px 12px;
   font-size: 12px;
 }
+
+/* ── AI Scan Card ── */
+.ai-scan-card {
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-line);
+  background: var(--color-paper);
+  overflow: hidden;
+  margin-bottom: 16px;
+  animation: sheet-up var(--dur) var(--ease);
+}
+
+.ai-scan-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
+
+.ai-scan-card__img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.ai-scan-card__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.ai-scan-card__loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 16px;
+  color: var(--color-ink-soft);
+  font-size: 13px;
+}
+
+.ai-scan-card__error {
+  padding: 14px 16px;
+  color: var(--color-clay);
+  font-size: 13px;
+  background: var(--color-clay-tint);
+}
+
+.ai-scan-card__result {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-scan-card__name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.ai-scan-card__portion {
+  font-size: 12px;
+  color: var(--color-ink-soft);
+  font-style: italic;
+  margin-top: -6px;
+}
+
+/* Macro chip-lar */
+.ai-scan-card__macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.macro-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px 8px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+}
+
+.macro-chip__val {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.macro-chip__lbl {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+.macro-chip--cal {
+  background: #fff4e5;
+  border-color: #ffd591;
+  color: #b85c00;
+}
+[data-theme="dark"] .macro-chip--cal {
+  background: #2c1e00;
+  border-color: #7a4000;
+  color: #ffb347;
+}
+
+.macro-chip--protein {
+  background: #fce8e8;
+  border-color: #f5a5a5;
+  color: #b72424;
+}
+[data-theme="dark"] .macro-chip--protein {
+  background: #2c0808;
+  border-color: #7a1a1a;
+  color: #ff7f7f;
+}
+
+.macro-chip--carbs {
+  background: #e8f4e8;
+  border-color: #9dd89d;
+  color: #1e6b1e;
+}
+[data-theme="dark"] .macro-chip--carbs {
+  background: #0a1f0a;
+  border-color: #2a5a2a;
+  color: #6fcf6f;
+}
+
+.macro-chip--fat {
+  background: #e8effe;
+  border-color: #9fb8f5;
+  color: #1a3a99;
+}
+[data-theme="dark"] .macro-chip--fat {
+  background: #080f2c;
+  border-color: #1a3070;
+  color: #7fa5f5;
+}
+
+/* Aniqlik progressbar */
+.ai-scan-card__confidence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  background: var(--color-mist);
+  border-radius: var(--radius-pill);
+  padding: 4px 4px 4px 0;
+  overflow: hidden;
+  position: relative;
+  height: 22px;
+}
+
+.ai-scan-card__confidence-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-moss), #8bc34a);
+  border-radius: var(--radius-pill);
+  opacity: 0.25;
+  transition: width 0.6s ease;
+}
+
+.ai-scan-card__confidence span {
+  position: relative;
+  z-index: 1;
+  padding-left: 10px;
+  font-weight: 600;
+  color: var(--color-moss);
+}
+
+/* Saqlandi holati */
+.ai-scan-card__saved {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 16px;
+  color: var(--color-moss);
+  animation: sheet-up 0.3s ease;
+}
+
+.ai-scan-card__saved p {
+  font-weight: 700;
+  font-size: 15px;
+}
