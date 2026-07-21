@@ -1,24 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, ImagePlus, X } from "lucide-react";
+import { Send, Sparkles, ImagePlus, X, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useApp } from "../../../context/AppContext";
 
+const WELCOME_KEY = "aidiet_chat_welcome_shown";
+
 export default function Chat() {
-  const { t, lang, chatRemaining, useChatMessage } = useApp();
+  const { t, lang, chatRemaining, useChatMessage, chatMessages, setChatMessages, clearChatMessages } = useApp();
   const router = useRouter();
-  const [messages, setMessages] = useState([{ role: "ai", text: t.chatWelcome }]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null); // base64
-  const [imagePreview, setImagePreview] = useState(null);   // data URL
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const endRef = useRef(null);
   const galleryRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, sending]);
+  }, [chatMessages, sending]);
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -37,17 +38,20 @@ export default function Chat() {
     setImagePreview(null);
   };
 
+  const handleClear = () => {
+    clearChatMessages();
+  };
+
   const send = async (e) => {
     e.preventDefault();
     if ((!input.trim() && !selectedImage) || sending || chatRemaining <= 0) return;
 
-    // Foydalanuvchi xabarini qo'shish
     const userMsg = {
       role: "user",
-      text: input.trim() || "📷 Rasm yuborildi",
+      text: input.trim() || "Rasm yuborildi",
       image: imagePreview || null,
     };
-    setMessages((m) => [...m, userMsg]);
+    setChatMessages((m) => [...m, userMsg]);
 
     const msgText = input.trim();
     const msgImage = selectedImage;
@@ -71,18 +75,22 @@ export default function Chat() {
       });
       const data = await res.json();
       if (data.error) {
-        setMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
+        setChatMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
       } else {
-        setMessages((m) => [...m, { role: "ai", text: data.response || "—" }]);
+        setChatMessages((m) => [...m, { role: "ai", text: data.response || "—" }]);
       }
     } catch {
-      setMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
+      setChatMessages((m) => [...m, { role: "ai", text: t.chatError || "Xatolik yuz berdi. Qaytadan urinib ko'ring." }]);
     } finally {
       setSending(false);
     }
   };
 
   const limitReached = chatRemaining <= 0;
+
+  const messages = chatMessages.length > 0
+    ? chatMessages
+    : [{ role: "ai", text: t.chatWelcome }];
 
   return (
     <div className="screen chat">
@@ -92,6 +100,16 @@ export default function Chat() {
         <span className="numeral">
           {chatRemaining === Infinity ? t.unlimited : `${chatRemaining} ${t.messagesLeft}`}
         </span>
+        {chatMessages.length > 0 && (
+          <button
+            className="chat__clear-btn"
+            onClick={handleClear}
+            aria-label="Tarixni tozalash"
+            title="Tarixni tozalash"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
       </div>
 
       <div className="chat__thread">
@@ -111,7 +129,6 @@ export default function Chat() {
         <div ref={endRef} />
       </div>
 
-      {/* Rasm preview */}
       {imagePreview && (
         <div className="chat__image-preview">
           <img src={imagePreview} alt="tanlangan rasm" />
@@ -171,4 +188,3 @@ export default function Chat() {
     </div>
   );
 }
-

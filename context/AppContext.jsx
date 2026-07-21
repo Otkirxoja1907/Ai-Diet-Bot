@@ -28,6 +28,7 @@ export function AppProvider({ children }) {
   const [macroGoals] = useState({ protein: 130, carbs: 260, fat: 70 });
   const [meals, setMeals] = useState([]);
   const [waterGlasses, setWaterGlasses] = useState(0);
+  const [chatMessages, setChatMessages] = useState([]);
   const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage once on mount (avoids SSR/client mismatch)
@@ -39,6 +40,7 @@ export function AppProvider({ children }) {
     setLastResetDate(readStorage("aidiet_last_reset", null));
     setMeals(readStorage("aidiet_meals", []));
     setWaterGlasses(readStorage("aidiet_water", 0));
+    setChatMessages(readStorage("aidiet_chat_messages", []));
     setHydrated(true);
   }, []);
 
@@ -65,6 +67,7 @@ export function AppProvider({ children }) {
   }, [hydrated, lastResetDate]);
   useEffect(() => { if (hydrated) localStorage.setItem("aidiet_meals", JSON.stringify(meals)); }, [meals, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("aidiet_water", JSON.stringify(waterGlasses)); }, [waterGlasses, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("aidiet_chat_messages", JSON.stringify(chatMessages)); }, [chatMessages, hydrated]);
 
   const t = translations[lang];
 
@@ -99,6 +102,7 @@ export function AppProvider({ children }) {
 
   const addMeal = (meal) => setMeals((prev) => [{ ...meal, id: Date.now() }, ...prev]);
   const useChatMessage = () => setChatUsedToday((n) => n + 1);
+  const clearChatMessages = () => { setChatMessages([]); localStorage.removeItem("aidiet_chat_messages"); };
 
   const value = {
     theme,
@@ -121,6 +125,9 @@ export function AppProvider({ children }) {
     setWaterGlasses,
     TIER_PRICE,
     lastResetDate,
+    chatMessages,
+    setChatMessages,
+    clearChatMessages,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

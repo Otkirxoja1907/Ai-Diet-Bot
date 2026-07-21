@@ -13,6 +13,24 @@
   margin: 6px 0 14px;
 }
 
+.chat__clear-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-clay);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat__clear-btn:hover {
+  background: var(--color-clay-tint);
+  color: var(--color-clay);
+}
+
 .chat__thread {
   flex: 1;
   overflow-y: auto;
