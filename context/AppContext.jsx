@@ -67,7 +67,11 @@ export function AppProvider({ children }) {
   }, [hydrated, lastResetDate]);
   useEffect(() => { if (hydrated) localStorage.setItem("aidiet_meals", JSON.stringify(meals)); }, [meals, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("aidiet_water", JSON.stringify(waterGlasses)); }, [waterGlasses, hydrated]);
-  useEffect(() => { if (hydrated) localStorage.setItem("aidiet_chat_messages", JSON.stringify(chatMessages)); }, [chatMessages, hydrated]);
+  useEffect(() => {
+    if (!hydrated) return;
+    const stripped = chatMessages.map(({ image, ...rest }) => rest);
+    localStorage.setItem("aidiet_chat_messages", JSON.stringify(stripped));
+  }, [chatMessages, hydrated]);
 
   const t = translations[lang];
 
